@@ -1,1 +1,1 @@
-# terra-community
+# terra
