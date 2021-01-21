@@ -186,7 +186,23 @@ vault:
 serviceIP: 35.223.31.120
 ```
 
-## Administration
+For `buffer`, there are additional properties:
+```yaml
+vault:
+  pathPrefix: secret/dsde/terra/kernel/integration/jcarlton
+
+ingress:
+  staticIpName: terra-integration-jcarlton-buffer-ip
+
+buffer:
+  pool:
+    configPath: config/toolsalpha
+
+proxy:
+  whitelist:
+    email: "buffer-client-jcarlton@terra-kernel-k8s.iam.gserviceaccount.com"
+```
+## Creating the namespace
 ### `kubectl` Setup
 Interaction with Kubernetes is most often accomplished with `kubectl`. This is a local utility that is packaged
 with Kubernetes. Type `kubectl version` to make sure it's installed.
@@ -197,8 +213,9 @@ $ kubectl version
 Client Version: version.Info{Major:"1", Minor:"19", GitVersion:"v1.19.3", GitCommit:"1e11e4a2108024935ecfcb2912226cedeafd99df", GitTreeState:"clean", BuildDate:"2020-10-14T12:50:19Z", GoVersion:"go1.15.2", Compiler:"gc", Platform:"darwin/amd64"}
 Server Version: version.Info{Major:"1", Minor:"17+", GitVersion:"v1.17.14-gke.400", GitCommit:"b00b302d1576bfe28ae50661585cc516fda2227e", GitTreeState:"clean", BuildDate:"2020-11-19T09:22:49Z", GoVersion:"go1.13.15b4", Compiler:"gc", Platform:"linux/amd64"}
 ```
+
  To connect `kubectl` to the cluster, you must first update `kubeconfig` with the proper credentials. 
-`gcloud container` has a `clusters get-credentials` option to support exactly this use case. In our case
+`gcloud container` has a [clusters get-credentials](https://cloud.google.com/sdk/gcloud/reference/container/clusters/get-credentials) option to support exactly this use case. In our case
 we need to specify both the project and zone as well as the cluster name:  
 ```shell script
 $ gcloud container clusters get-credentials terra-integration --zone us-central1-a --project terra-kernel-k8s
@@ -208,6 +225,19 @@ Fetching cluster endpoint and auth data.
 kubeconfig entry generated for terra-integration.
 ```
 
+### Making the namespace
+```shell script
+$ kubectl create namespace terra-jcarlton
+```
+```text
+namespace/terra-jcarlton created
+```
+
+## Syncing in ArgoCD
+The [terra-app-generator](https://ap-argocd.dsp-devops.broadinstitute.org/applications/terra-app-generator)
+application in ArgoCD needs to sync the new environment and its dependent sources. As of this writing,
+only a member of DevOps engineers and admins have access to this app. So contact someone in #dsp-devops-champions and ask to have your new app synced.
+## Using `kubectl` 
 To view the current `kubectl config` do
 ```shell script
 $ kubectl config view
