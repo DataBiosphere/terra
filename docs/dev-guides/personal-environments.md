@@ -26,33 +26,32 @@ THe basic prerequisites are
 2. Membership in the Google group [dsde-engineering](https://groups.google.com/a/broadinstitute.org/g/dsde-engineering)
 for access to private Github repos and [ArgoCD](https://argoproj.github.io/argo-cd/)
 3. A public GitHub account
-4. A linkage between this GitHub account and your Broad account, using the [Broad Institute GitHub App](https://broad-github.appspot.com/). 
+4. A linkage between this GitHub account and a Broad account, using the [Broad Institute GitHub App](https://broad-github.appspot.com/). 
 5. (helpful) SSH credentials for using GitHub
 6. Membership in the private Git team for Platform Foundations.
-7. A first initial and last name. I'm using `jcarlton` throughout so I don't
-have to edit commands and outputs from my sessions.
+7. A first initial and last name. Using `jcarlton` in these examples.
 
 For most permissions issues, contact DevOps.
 
 See also the [DSP's Getting Started with `kubectl`](https://docs.dsp-devops.broadinstitute.org/kubernetes/kubectl-getting-started)
 and [Terraform Best Practices](https://docs.dsp-devops.broadinstitute.org/best-practices-guides/terraform).  
 ## Step 1: Terraform Orchestration for Terra Environment
-We use terraform to set up cloud services, accounts, and artifacts that our services need, but not
+Terra uses terraform to set up cloud services, accounts, and artifacts that our services need, but not
 for deploying the services themselves. These resources are all managed outside of Kubernetes.
 At this point, the [existing documentation](https://docs.dsp-devops.broadinstitute.org/mc-terra/mcterra-quickstarts#Create-a-new-namespaced-environment-in-an-existing-cluster)
 in the DevOps Confluence is applicable, and some of the following borrows from it. The process involves
 two different pull requests in different repositories. The first is a change to the 
 [terraform-ap-depoyments](https://github.com/broadinstitute/terraform-ap-deployments)
 repo, and the subject is any cloud dependencies that must be instantiated for the new environment. Different
-use cases will have different needs here, but for Workspace Manager we're interested in the following.
+use cases will have different needs here, but for Workspace Manager all that is needed is the following.
 
 The Broad's Terraform modules live in a public repository called [terraform-ap-modules](https://github.com/broadinstitute/terraform-ap-modules).
 These are combined with generated private client modules, variables, and secrets to instantiate the
 actual environments and artifacts. The latter are contained in the private repo [terraform-ap-deployments](https://github.com/broadinstitute/terraform-ap-deployments), 
-and this is the one we need to change. See this [DevOps Portal entry](https://docs.dsp-devops.broadinstitute.org/mc-terra/mcterra-deployment#Infrastructure---Terraform)
+and this is the one to change. See this [DevOps Portal entry](https://docs.dsp-devops.broadinstitute.org/mc-terra/mcterra-deployment#Infrastructure---Terraform)
 for more background.
 
-First, we declare a new Terra Environment in [atlantis.yaml](https://github.com/broadinstitute/terraform-ap-deployments/blob/master/atlantis.yaml#L70). A new object
+First, declare a new Terra Environment in [atlantis.yaml](https://github.com/broadinstitute/terraform-ap-deployments/blob/master/atlantis.yaml#L70). A new object
 in a yaml array describes the top-level properties of the environment. Note that "environment" here
 is a set of conventions for creating a stand-alone instance of one or more services, and not anything
 specific in k8s or Terraform. Mine looks like this:
@@ -65,11 +64,11 @@ specific in k8s or Terraform. Mine looks like this:
     enabled: false
 ```
 It's easy to get confused between the env name (`terra-env-jcarlton`), the workspace (`jcarlton`), and the k8s namespace eventually
-created (`terra-jcarlton`). There are numerous examples of the conventions in this file, and I admit
-I cheated a little off the surrounding entries. Note that Atlantis is a tool for managing Terraform updates,
+created (`terra-jcarlton`). There are numerous examples of the conventions in this file, and following
+existing examples works well. Note that Atlantis is a tool for managing Terraform updates,
 but atlantis.yaml is not itself a Terraform file.
 
-Second, we specify some workflow settings for deploying the environment. Among other things, this tells
+Second, specify some workflow settings for deploying the environment. Among other things, this tells
 Atlantis to pass the variables file `jcarlton.tfvars`
 ```yaml
   terra-env-jcarlton:
@@ -81,18 +80,18 @@ Atlantis to pass the variables file `jcarlton.tfvars`
             extra_args: ["-var-file", "tfvars/jcarlton.tfvars"]
 ```
 
-Third, we check in a tfvars file for Terraform to use as its input variables when building this [workspace](https://www.terraform.io/docs/state/workspaces.html).
-THe contents of these files change frequently
+Third, check in a tfvars file for Terraform to use as its input variables when building this [workspace](https://www.terraform.io/docs/state/workspaces.html).
+THe contents of these files change frequently and are service-dependent.
 
-This file should be in a path like `terraform-ap-deployments/terra-env/tfvars/jcarlton.tfvars`. IDs will vary, though I borrowed
-mine from a teammate. Folder IDs refer to [GCP Project Folders](https://cloud.google.com/resource-manager/docs/creating-managing-folders).
-The entries under `terra_apps` describe services your deployment will depend on. A `true` value causes
+This file should be in a path like `terraform-ap-deployments/terra-env/tfvars/jcarlton.tfvars`. 
+Folder IDs refer to [GCP Project Folders](https://cloud.google.com/resource-manager/docs/creating-managing-folders).
+The entries under `terra_apps` describe services a deployment will depend on. A `true` value causes
 resources for a dependency to be created. Google project and cluster information should be the same
 for everyone.
 
 The repository is integrated with [Atlantis](https://www.runatlantis.io/), which checks terraform artifacts
 before merge to make sure they can `plan` and `apply` successfully. When pushing a PR to this repo, 
-it's expected you'll run `atlantis` commands as part of the review process. A detailed protocol for
+one must run `atlantis` commands as part of the review process. A detailed protocol for
 PRs in this repo is in its [README file](https://github.com/broadinstitute/terraform-ap-deployments/blob/master/README.md).
 First, a github comment of
  ```shell script
@@ -106,8 +105,8 @@ Show Output
 ```
 
 Following a successful `plan` and a review from one of the CODEOWNERS  (ping `#dsp-devops-champions`
-for a reviewer), run `atlantis apply`, and if that's successful (and you get an approval), 
-you can merge the PR.
+for a reviewer), wait for an approval. Then run `atlantis apply -p terra-env-jcarlton`, and if that's successful,
+merge the PR.
 ## Step 2: Edit the Helm File and Auxiliary Files
 [Helm](https://helm.sh/) manages k8s packages called [Helm Charts](https://helm.sh/docs/topics/charts/),
 allowing large-scale Kubernetes deployments. These may be published in public or private repositories,
@@ -115,7 +114,7 @@ similarly to Docker container applications. In turn, a [helmfile](https://github
 may be used to work with many charts in a large, heterogeneous application (like Terra).
 
 ### Aside: look through the Charts
-The main Terra Helm charts don't need changing for a personal environment, but we set up instructions to create
+The main Terra Helm charts don't need changing for a personal environment, but set up instructions to create
 an instance with it. Charts for Terra are located in the public [terra-helm repo](https://github.com/broadinstitute/terra-helm).
 The chart directory for workspace manager is [here](https://github.com/broadinstitute/terra-helm/tree/master/charts/workspacemanager).
 THe chart is actually surprisingly brief, showing only one dependency.
@@ -157,16 +156,16 @@ $ helm pull terra-helm/workspacemanager
 ```
 and a .tgz file such as `workspacemanager-0.19.0.tgz` should be downloaded silently to the current directory.
 
-We don't need to make any changes to the `terra-helm` repo in order to set up a personal environment.
+No changes to the `terra-helm` repo are necessary in order to set up a personal environment.
 
 ### The Helmfile
 The helmfile allows specifying override values for a chart for a particular
 deployment, and the [terra-helmfile repo](https://github.com/broadinstitute/terra-helmfile)
 is the place providing and for editing those. This "gitOps" model
 is similar to the relationship between the private, Atlantis-enabled `terraform-ap-deployments` repo
-and the public `terraform-ap-modules` that we saw above.
+and the public `terraform-ap-modules` that described above.
 
-We don't actually need `helm` installed locally for this step, though it will be required later.
+It's not necessary to have `helm` installed locally for this step, though it will be required later.
 
 
 Clone the [terra-helmfile](https://github.com/broadinstitute/terra-helmfile) and look at the file structure.
@@ -203,7 +202,7 @@ $ tree -L 2
 └── versions.yaml
 
 ```
-You can see the main `helmfile.yaml`, an `environments` directory with subdirectories for `live` and `personal`, and a `terra` directory
+There is a main `helmfile.yaml`, an `environments` directory with subdirectories for `live` and `personal`, and a `terra` directory
 with subdirectories for each service:
 ```shell script
 jaycarlton~/repos/terra-helmfile/terra (master) $ tree -L 2
@@ -283,7 +282,7 @@ defaultCluster: terra-integration
 </details>
 
 Finally, each service to be included has its own `values` override file for our environment:
-For `terra/values/workspacemanager/personal/jcarlton.yaml`, you should verify that [vault](https://www.vaultproject.io/) has secret
+For `terra/values/workspacemanager/personal/jcarlton.yaml`, verify that [vault](https://www.vaultproject.io/) has a secret
 stored at the path described. In my case this had already been taken care of.
 
 ```yaml
@@ -310,9 +309,10 @@ Server Version: version.Info{Major:"1", Minor:"17+", GitVersion:"v1.17.14-gke.40
 
 </details>
 
- To connect `kubectl` to the cluster, you must first update `kubeconfig` with the proper credentials. 
-`gcloud container` has a [clusters get-credentials](https://cloud.google.com/sdk/gcloud/reference/container/clusters/get-credentials) option to support exactly this use case. In our case
-we need to specify both the project and zone as well as the cluster name:  
+ To connect `kubectl` to the cluster, first update `kubeconfig` with the proper credentials. 
+`gcloud container` has a [clusters get-credentials](https://cloud.google.com/sdk/gcloud/reference/container/clusters/get-credentials)
+option to support exactly this use case. In the present case case it is necessary to specify both the
+project and zone as well as the cluster name:  
 ```shell script
 $ gcloud container clusters get-credentials terra-integration --zone us-central1-a --project terra-kernel-k8s
 ```
@@ -336,7 +336,8 @@ with instructions in its README for loading the helm chart and terraform state o
 ## Syncing in ArgoCD
 The [terra-app-generator](https://ap-argocd.dsp-devops.broadinstitute.org/applications/terra-app-generator)
 application in ArgoCD needs to sync the new environment and its dependent sources. As of this writing,
-only a member of DevOps engineers and admins have access to this app. So contact someone in #dsp-devops-champions and ask to have your new app synced.
+only a member of DevOps engineers and admins have access to this app. So contact someone in #dsp-devops-champions and ask to have
+the new app synced.
 ## Using `kubectl` 
 To view the current `kubectl config` do
 ```shell script
@@ -418,7 +419,7 @@ Resource Quotas
 No LimitRange resource.
 ```
 
-The output shows that I have an active namespace with no labels and I'm well under quota. To view details
+The output shows an active namespace with no labels and plenty of quota. To view details
 about the pods, use `get pods` and isolate the namespace to use:
 ```shell script
 $ kubectl get pods --namespace=terra-jcarlton
@@ -436,7 +437,7 @@ NAME                       TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
 workspacemanager-service   ClusterIP   10.56.8.103   <none>        443/TCP   4h39m
 ```
 
-It's also possible to set this namespace as a default, at which point you can leave off the `--namespace`
+It's also possible to set this namespace as a default, and omit the `--namespace`
 qualifier:
 ```shell script
 $ kubectl config set-context --current --namespace=terra-jcarlton
@@ -478,5 +479,5 @@ of useful goodies.
 
 #### Terraform
 [Terraform Up & Running](https://www.amazon.com/Terraform-Running-Writing-Infrastructure-Code/dp/1491977086)
-is an excellent resource for getting your head around Terraform and some of the
+is an excellent resource for getting one's head around Terraform and some of the
 design decisions that went into it.
