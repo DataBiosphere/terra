@@ -12,27 +12,16 @@ named for a developer, sharing a larger cluster in the GCP
 project [terra-kernel-k8s](https://console.cloud.google.com/home/dashboard?project=terra-kernel-k8s)
 called 
 [terra-integration](https://console.cloud.google.com/kubernetes/clusters/details/us-central1-a/terra-integration?project=terra-kernel-k8s&tab=details&persistent_volumes_tablesize=50&storage_class_tablesize=50&nodes_tablesize=50&node_pool_tablesize=10).
-Deployments target this namespace and allow `kubectl` commands to be narrowly focused. The deployment
-consists of a single
-[pod](https://kubernetes.io/docs/concepts/workloads/pods/) and [service](https://kubernetes.io/docs/concepts/services-networking/service/)
-in the case of Workspace Manager, though the system is more flexible than that.
-
-### Helpful Background Reading
-#### Kubernetes
-[The Kubernetes Book]() is very accessible for beginners (like myself), and uses lots of images and
-repetition to bring the main points home. Additionally, the exercises on the main Kubernetes site are
-well-paced, insightful, and a realistic facsimile of a k8s cluster and the process of interacting
-with it. The [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) has lots
-of useful goodies.
-
-#### Terraform
-[Terraform Up & Running](https://www.amazon.com/Terraform-Running-Writing-Infrastructure-Code/dp/1491977086)
-is an excellent resource for getting your head around Terraform and some of the
-design decisions that went into it.
+Kubernetes [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) target this namespace and allow `kubectl` commands to be narrowly focused. The deployment
+consists of one or more
+[pods](https://kubernetes.io/docs/concepts/workloads/pods/) and [service](https://kubernetes.io/docs/concepts/services-networking/service/)
+in the case of Workspace Manager, though the system is more flexible than that. A user may wish to include
+several services in a personal environment, depending on their testing needs. A given Terra service
+deployment could involve more than one k8s pod or deployment. The term deployment is also used to mean
+a deployment of the entire Terra application.
 
 ## Prerequisites
-### Accounts
-You'll need
+THe basic prerequisites are
 1. An `@broadinstitute.org` account
 2. Membership in the Google group [dsde-engineering](https://groups.google.com/a/broadinstitute.org/g/dsde-engineering)
 for access to private Github repos and [ArgoCD](https://argoproj.github.io/argo-cd/)
@@ -45,7 +34,11 @@ have to edit commands and outputs from my sessions.
 
 For most permissions issues, contact DevOps.
 
+See also the [DSP's Getting Started with `kubectl`](https://docs.dsp-devops.broadinstitute.org/kubernetes/kubectl-getting-started)
+and [Terraform Best Practices](https://docs.dsp-devops.broadinstitute.org/best-practices-guides/terraform).  
 ## Step 1: Terraform Orchestration for Terra Environment
+We use terraform to set up cloud services, accounts, and artifacts that our services need, but not
+for deploying the services themselves. These resources are all managed outside of Kubernetes.
 At this point, the [existing documentation](https://docs.dsp-devops.broadinstitute.org/mc-terra/mcterra-quickstarts#Create-a-new-namespaced-environment-in-an-existing-cluster)
 in the DevOps Confluence is applicable, and some of the following borrows from it. The process involves
 two different pull requests in different repositories. The first is a change to the 
@@ -89,34 +82,19 @@ Atlantis to pass the variables file `jcarlton.tfvars`
 ```
 
 Third, we check in a tfvars file for Terraform to use as its input variables when building this [workspace](https://www.terraform.io/docs/state/workspaces.html).
-```hcl-terraform
-# General
-google_project = "terra-kernel-k8s"
-cluster        = "integration"
-cluster_short  = "integ"
+THe contents of these files change frequently
 
-terra_apps = {
-  workspace_manager = true,
-  crl_janitor       = true,
-  buffer            = true,
-}
-
-# Resource Buffer Service Testing
-buffer_google_folder_ids   = ["637867149294"]
-buffer_billing_account_ids = ["01A82E-CA8A14-367457"]
-
-# Workspace Manager
-wsm_workspace_project_folder_id = "1094831421623" # DSP Integration
-wsm_billing_account_ids         = ["01A82E-CA8A14-367457"]
-```
-This file should be in a path like `terraform-ap-deployments/terra-env/tfvars/jcarlton.tfvars`. IDs will vary, thougth I borrowed
+This file should be in a path like `terraform-ap-deployments/terra-env/tfvars/jcarlton.tfvars`. IDs will vary, though I borrowed
 mine from a teammate. Folder IDs refer to [GCP Project Folders](https://cloud.google.com/resource-manager/docs/creating-managing-folders).
-The entries under `terra_apps` describe services your deployment will depend on (but not deploy). Google project and cluster
-information should be the same for everyone.
+The entries under `terra_apps` describe services your deployment will depend on. A `true` value causes
+resources for a dependency to be created. Google project and cluster information should be the same
+for everyone.
 
 The repository is integrated with [Atlantis](https://www.runatlantis.io/), which checks terraform artifacts
 before merge to make sure they can `plan` and `apply` successfully. When pushing a PR to this repo, 
-it's expected you'll run `atlantis` commands as part of the review process. First, a github comment of
+it's expected you'll run `atlantis` commands as part of the review process. A detailed protocol for
+PRs in this repo is in its [README file](https://github.com/broadinstitute/terraform-ap-deployments/blob/master/README.md).
+First, a github comment of
  ```shell script
  atlantis plan -p terra-env-jcarlton
 ```
@@ -127,7 +105,8 @@ Ran Plan for project: terra-env-jcarlton dir: terra-env workspace: jcarlton
 Show Output
 ```
 
-Following a successful plan, run `atlantis apply`, and if that's successful (and you get an approval), 
+Following a successful `plan` and a review from one of the CODEOWNERS  (ping `#dsp-devops-champions`
+for a reviewer), run `atlantis apply`, and if that's successful (and you get an approval), 
 you can merge the PR.
 ## Step 2: Edit the Helm File and Auxiliary Files
 [Helm](https://helm.sh/) manages k8s packages called [Helm Charts](https://helm.sh/docs/topics/charts/),
@@ -136,7 +115,7 @@ similarly to Docker container applications. In turn, a [helmfile](https://github
 may be used to work with many charts in a large, heterogeneous application (like Terra).
 
 ### Aside: look through the Charts
-The main Terra Helm charts don't need changing for our deployment, but we set up instructions to create
+The main Terra Helm charts don't need changing for a personal environment, but we set up instructions to create
 an instance with it. Charts for Terra are located in the public [terra-helm repo](https://github.com/broadinstitute/terra-helm).
 The chart directory for workspace manager is [here](https://github.com/broadinstitute/terra-helm/tree/master/charts/workspacemanager).
 THe chart is actually surprisingly brief, showing only one dependency.
@@ -266,7 +245,7 @@ For this PR we'll edit all of
 * a personal.yaml file defining our environment's enabled services at a  high level.
 * several values files defining parameters for the individual services in the environment
 
-### Helmfile
+### Changes to helmfile.yaml
 The main helmfile itself gets a simple two-line entry for this project pointing to other files with
 properties to read (including the one above):
 ```yaml
@@ -276,20 +255,16 @@ properties to read (including the one above):
       - environments/personal/jcarlton.yaml
 ```
 
-### Personal yaml file
-This file describes the Terra apps that are required for the personal environment. In my case those were
-resource buffer, janitor, and workspace manager. For the file `terra-helmfile/environments/personal/jcarlton.yaml`:
+### Changes to Personal yaml file
+This file describes the Terra apps that are required for the personal environment. For simplicity,
+one cna look at an environment with only workspace manager enabled. For the file `terra-helmfile/environments/personal/jcarlton.yaml`:
 ```yaml
 # Environment overrides for jcarlton environment
 releases:
-  crljanitor:
-    enabled: true
   workspacemanager:
     enabled: true
-  buffer:
-    enabled: true
 ```
-If any environments are disabled, their resources are not generated by Terraform.
+If any applications are disabled, their resources are not generated by helm.
 
 The main personal.yaml is nearly empty (and should not be edited). It appears just to be a lightweight
 bit of plumbing so the whole repo isn't just one massive file.
@@ -303,11 +278,6 @@ base: 'personal'
 
 # All private dev environments go to same cluster
 defaultCluster: terra-integration
-
-# Enable services below, eg:
-# releases:
-#   cromwell:
-#     enabled: true
 ```
 
 </details>
@@ -324,31 +294,7 @@ ingress:
   staticIpName: terra-integration-jcarlton-workspace-ip
 ```
 
-For `terra/values/crljanitor/personal/jcarlton.yaml`, you need the IP address from the `atlantis apply` call in the previous PR.
-```yaml
-vault:
-  pathPrefix: secret/dsde/terra/kernel/integration/jcarlton
-  configPathPrefix: config/terraform/terra/integration/jcarlton
-serviceIP: 35.223.31.120
-```
-
-For `buffer`, there are additional properties:
-```yaml
-vault:
-  pathPrefix: secret/dsde/terra/kernel/integration/jcarlton
-
-ingress:
-  staticIpName: terra-integration-jcarlton-buffer-ip
-
-buffer:
-  pool:
-    configPath: config/toolsalpha
-
-proxy:
-  whitelist:
-    email: "buffer-client-jcarlton@terra-kernel-k8s.iam.gserviceaccount.com"
-```
-## Creating the namespace
+## Step 3: Creating the namespace
 ### `kubectl` Setup
 Interaction with Kubernetes is most often accomplished with `kubectl`. This is a local utility that is packaged
 with Kubernetes. Type `kubectl version` to make sure it's installed.
@@ -521,3 +467,16 @@ gke-terra-integration-default-v2-95d71f95-gdfy   Ready    <none>   30h   v1.17.1
 ```
 
 </details>
+
+### Additional Background Reading
+#### Kubernetes
+[The Kubernetes Book]() is very accessible for beginners (like the author), and uses lots of images and
+repetition to bring the main points home. Additionally, the exercises on the main Kubernetes site are
+well-paced, insightful, and a realistic facsimile of a k8s cluster and the process of interacting
+with it. The [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) has lots
+of useful goodies.
+
+#### Terraform
+[Terraform Up & Running](https://www.amazon.com/Terraform-Running-Writing-Infrastructure-Code/dp/1491977086)
+is an excellent resource for getting your head around Terraform and some of the
+design decisions that went into it.

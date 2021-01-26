@@ -1,4 +1,4 @@
 # Terra
 ## Dev Guides
-Developer guides exist for 
-* [Personal Environments](./docs/dev-guides/PERSONAL-ENVIRONMENTS.md)
+Developer guides exist for various topics.These are located in the [docs/dev-guides](./docs/dev-guides)
+directory.
