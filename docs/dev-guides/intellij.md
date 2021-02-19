@@ -1,22 +1,20 @@
 # IntelliJ for Power Users
 IntelliJ has many secrets, and the easiest way to discover them is on accident. However, it's worth
 compiling some of the most useful ones in one place, so that one can benefit more quickly from them.
-All keyboard shortcuts are for the MacOS scheme.
+All keyboard shortcuts are  9-5for the MacOS scheme.
 
 ## Editing
 ### Autocomplete
 ### Generate
+Ctrl+N brings up a generate dialog, which can auto-generate
+- setters
+- getters
+- equals and hashcode
+
 ### Comment
 Cmd+/ will toggle a line comment on the current line or selected section of code.
 ### Javadoc
 Ctrl+Option+Q renders any javadoc around the cursor in place. 
-## Refactoring
-### Move
-### Rename
-
-### Introduce
-The family of Introduce refactorings is worth the price of admission to IntelliJ. It can rapidly turn
-OK code into great code.
 #### Constant
 Cmd+Opt+C will create a class constant from a selected expression. It will suggest an UPPER_SNAKE_CASE
 name which can be changed.
