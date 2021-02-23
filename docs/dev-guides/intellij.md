@@ -7,23 +7,24 @@ All keyboard shortcuts are  9-5for the MacOS scheme.
 ### Autocomplete
 When typing symbols, auto-completion is available. Type tab then Enter to accept
 the highlighted term, or use up and down keys to choose another one.
+
 ![Autocomplete](./images/intellij/autocomplete.png)
 
 ### Generate
-![Generate](./images/intellij/generate.png)
+![Generate](./images/intellij/generate_menu.png)
+
 Ctrl+N brings up a generate dialog, which can auto-generate
-- setters
-- getters
-- equals and hashcode
-- toString
-- etc
+- setters: given existing private members, writes a `getMemberName()` method
+- getters: same, but for `setMemberName()`
+- equals and hashcode: correct versions of equals or hash code suitable for use in collections
+- toString: reasonable implementation of `toString()`, using name/value pairs
 
 Unfortunately, these items are generated only on demand, and don't get updated when new
 class members are added or removed.
 ### Copy and Paste Special
 The context menu has `Copy / Paste Special`.
 ![Copy / Paste Special](./images/intellij/copy_paste_speciial.png)
-#### Copy Fully Qualified Reference
+#### Copy Reference
 It's possible to copy fully qualified references to symbols using Cmd+Opt+Shift+C, such as
 `bio.terra.stairway.fixtures.MapKey#COUNTER_START` when selecting just `COUNTER_START`.
 This reference is helpful in fixing up import collisions and providing
@@ -45,9 +46,13 @@ code.
 ![Comment](./images/intellij/comment.png)
 ### Javadoc
 Ctrl+Option+Q renders any javadoc around the cursor in place. 
+
 Before:
+
 ![Javadoc](./images/intellij/javadoc_before.png)
+
 After:
+
 ![Javadoc Rendered Inline](./images/intellij/javadoc_rendered.png)
 
 ## Refactorings
@@ -76,12 +81,15 @@ allowing multiple implementation classes.
 
 For best results, rename the class donating the interface to something like `MyServiceImpl`, so that
 the interface can be named `MyService`.
+
 ![dialog](./images/intellij/extract_interface_dialog.png)
 
 Initial class diagram:
+
 ![before](./images/intellij/before_extract_interface.png)
 
 Final class Diagram, showing overridden interface members
+
 ![before](./images/intellij/after_extract_interface.png)
 
 IntelliJ will fix up references to the original class to refer to the new interface, if desired.
@@ -91,9 +99,13 @@ A variable may be inlined, or replaced with its defining expression, by
 Cmd+Opt+N. This practice is a good way to clean up temporary variables
 that have low expressive value.
 
+This refactoring is also available as a quick fix: note the half-highlight in the Before image.
 Before:
+
 ![inline_before](./images/intellij/inline_before.png)
+
 After:
+
 ![inline_before](./images/intellij/inline_after.png)
 
 ### Change Signature
@@ -112,8 +124,10 @@ build method to `build()`.
 ![builder](./images/intellij/builder.png)
 
 ## Navigation
+Some of the most common navigation commands are below. Several  more are available in the Navigate
+menu.
 ### Back and Forward
-Cmd+Opt+left/right navigate back and forth through history. This isuseful especially for jumping around
+Cmd+Opt+left/right navigate back and forth through history. This is useful especially for jumping around
 withing one or two files.
 ### Navigate by word or token
 Option+Left moves one word to the left, Opt+Right moves to the right. Left and right
@@ -173,6 +187,13 @@ Pressing shift twice in succession launches find in All categories.
 With the cursor on a parent class, generic method, or interface, Cmd+Opt+B will
 show a list of implementations suitable for navigation.
 ## Debugging
+### Evaluate
+The Evaluate window, available when in break mode, allows one to inspect state, call methods, perform
+casts, or any other sanity checks. It's available with Opt+F8, and is extremely versatile and powerful.
+It can be launched from anywhere, but if an expression in code is highlighted, the dialog will initially
+evaluate that expression.
+
+![evaluate](./images/intellij/evaluate.png)
 
 ## Analysis
 ### Diagrams
