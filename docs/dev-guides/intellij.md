@@ -21,11 +21,14 @@ Ctrl+N brings up a generate dialog, which can auto-generate
 Unfortunately, these items are generated only on demand, and don't get updated when new
 class members are added or removed.
 ### Copy and Paste Special
-This feature is also under the context menu as `Copy / Paste Special`.
+The context menu has `Copy / Paste Special`.
 ![Copy / Paste Special](./images/intellij/copy_paste_speciial.png)
-#### Fully Qualified Reference
+#### Copy Fully Qualified Reference
 It's possible to copy fully qualified references to symbols using Cmd+Opt+Shift+C, such as
 `bio.terra.stairway.fixtures.MapKey#COUNTER_START` when selecting just `COUNTER_START`.
+This reference is helpful in fixing up import collisions and providing
+a full package path to the Move refactoring. It's also useful for Slack
+messages.
 #### Paste as Plain Text
 When inserting text from unknown sources that may have special characters, a plain
 text insert is useful. Cmd+Opt+Shift+V, or the context menu, does this.
@@ -42,29 +45,71 @@ code.
 ![Comment](./images/intellij/comment.png)
 ### Javadoc
 Ctrl+Option+Q renders any javadoc around the cursor in place. 
-### Builder
+Before:
+![Javadoc](./images/intellij/javadoc_before.png)
+After:
+![Javadoc Rendered Inline](./images/intellij/javadoc_rendered.png)
 
 ## Refactorings
 ### Introduce Refactorings
 Several refactorings are available to introduce simplifications into code.
 
+![](./images/intellij/extract_introduce_menu.png)
 #### Introduce Constant
 Cmd+Opt+C will create a class constant from a selected expression. It will suggest an UPPER_SNAKE_CASE
 name which can be changed.
 ![img](./images/intellij/introduce_constant.png)
-#### Variable
+#### Introduce Variable
 Similarly, Cmd+Opt+V creates a variable in the local scope from a selected expression.
 
-#### Method
+#### Introduce Method
 To introduce a method, select an expression or group of expressions with a well-defined set of inputs
 and zero or one output. Not all selections are valid methods, naturally, and occasionally it's necessarily
 to refactor slightly so that the tool gets the right result. Frequently, it considers values to be constant
 that are desired as parameters. Those can be fixed with the Change Signature refactoring.
 
-#### Change Signature
+#### Extract Interface
+A class with public methods can define an interface for those methods
+and then override them with the Extract Interface refactoring. This can
+be useful for declaring Sprinig beans that depend only on the interface,
+allowing multiple implementation classes.
+
+For best results, rename the class donating the interface to something like `MyServiceImpl`, so that
+the interface can be named `MyService`.
+![dialog](./images/intellij/extract_interface_dialog.png)
+
+Initial class diagram:
+![before](./images/intellij/before_extract_interface.png)
+
+Final class Diagram, showing overridden interface members
+![before](./images/intellij/after_extract_interface.png)
+
+IntelliJ will fix up references to the original class to refer to the new interface, if desired.
+
+### Inline
+A variable may be inlined, or replaced with its defining expression, by
+Cmd+Opt+N. This practice is a good way to clean up temporary variables
+that have low expressive value.
+
+Before:
+![inline_before](./images/intellij/inline_before.png)
+After:
+![inline_before](./images/intellij/inline_after.png)
+
+### Change Signature
 The Change Signature refactoring, cmd+F6, allows renaming and rearranging parameters to a method or
 constructor signature. It fixes up subclass overrides and allows previewing the result.
 ![img](./images/intellij/change_signature.png)
+
+### Builder
+The command at  `Refactor | Replace Constructor with Builder` generates
+builder code for value classes. By default, it creates a stand-alone class
+outside the class to be instantiated. The generated builder doesn't quite
+correspond to the common practice around organization and naming. It's
+generally helpful to move this generated class into the target class, rename it to `Builder`, and rename its
+build method to `build()`. 
+
+![builder](./images/intellij/builder.png)
 
 ## Navigation
 ### Back and Forward
@@ -85,6 +130,8 @@ initially. On the left side is a list of recently active tool panes for quick na
 ![img](./images/intellij/recent_files_selection.png)
 ### Goto Line
 Cmd+G brings up an input box taking a line number to visit. A column can also be provided after a colon.
+
+![goto](./images/intellij/)
 ### Autowired Spring Dependencies
 (IntelliJ Ultimate Only) Green spring symbols next to autowired constructor parameters or other injection
 points allow navigation to the source of the bean in either a configuration or component or service. 
