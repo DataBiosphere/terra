@@ -1,9 +1,27 @@
 # IntelliJ for Power Users
 IntelliJ has many secrets, and the easiest way to discover them is on accident. However, it's worth
 compiling some of the most useful ones in one place, so that one can benefit more quickly from them.
-All keyboard shortcuts are  9-5for the MacOS scheme.
+All keyboard shortcuts are for the MacOS scheme.
 
 ## Editing
+### Rectangular Edit Mode
+To edit a rectangular region across multiple lines and columns,
+hold down Option and drag a vertical line or rectangle. This
+selection mode will allow multi-line edits without including the
+beginnings and endings of the lines affected. Typing will insert a character on every line at the
+cursor, and delete will kill the rectangle.
+
+![rectangle](./images/intellij/rectangle_selection.png)
+
+Shortcuts to advance by word work in this mode on a per-line basis, so it's possible to highlight the
+third token on every line using Option+right and Option+Shift+Right. From there, changing the types of all
+parameters at once is possible, as long as they're all being changed to the same thing.
+
+![multi-edit](./images/intellij/multi_select.png)
+
+![alll_string](./images/intellij/all_string.png)
+
+A common use 
 ### Autocomplete
 When typing symbols, auto-completion is available. Type tab then Enter to accept
 the highlighted term, or use up and down keys to choose another one.
@@ -76,7 +94,7 @@ that are desired as parameters. Those can be fixed with the Change Signature ref
 #### Extract Interface
 A class with public methods can define an interface for those methods
 and then override them with the Extract Interface refactoring. This can
-be useful for declaring Sprinig beans that depend only on the interface,
+be useful for declaring Spring beans that depend only on the interface,
 allowing multiple implementation classes.
 
 For best results, rename the class donating the interface to something like `MyServiceImpl`, so that
@@ -145,7 +163,7 @@ initially. On the left side is a list of recently active tool panes for quick na
 ### Goto Line
 Cmd+G brings up an input box taking a line number to visit. A column can also be provided after a colon.
 
-![goto](./images/intellij/)
+![goto](./images/intellij/goto_line.png)
 ### Autowired Spring Dependencies
 (IntelliJ Ultimate Only) Green spring symbols next to autowired constructor parameters or other injection
 points allow navigation to the source of the bean in either a configuration or component or service. 
@@ -201,7 +219,7 @@ UML-style diagrams are available in IntelliJ Ultimate. Several options are avail
 methods, properties, inner classes, template parameters, parents, and children.
 ![diagram](./images/intellij/diagram_example.png)
 ### Inspections
-
+Analyze | Inspect Code... runs a number of 
 ## Plugins
 ### Gradle
 
