@@ -21,7 +21,8 @@ parameters at once is possible, as long as they're all being changed to the same
 
 ![alll_string](./images/intellij/all_string.png)
 
-A common use 
+A common use case is for aligning blocks of text in situations where the IDE can't choose the correct
+alignment.
 ### Autocomplete
 When typing symbols, auto-completion is available. Type tab then Enter to accept
 the highlighted term, or use up and down keys to choose another one.
