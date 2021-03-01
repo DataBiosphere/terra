@@ -19,18 +19,18 @@ All Terra repos should use the following tools:
 *   [Spotless Gradle plugin](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) for auto-formatting. (See [example](https://github.com/DataBiosphere/terra-resource-buffer/blob/678a55c7a07b076dec318f4850a47a17ca3f56d9/build.gradle#L181). Devs may also find it useful to set up [google-java-format for IntelliJ](https://plugins.jetbrains.com/plugin/8527-google-java-format).)
 *   [Spotbugs Gradle plugin](https://plugins.gradle.org/plugin/com.github.spotbugs) for static analysis. (See [example](https://github.com/DataBiosphere/terra-resource-buffer/blob/678a55c7a07b076dec318f4850a47a17ca3f56d9/build.gradle#L241).)
 
-We will continually evaluate additional static analysis tools (such as [PMD](https://docs.gradle.org/current/userguide/pmd_plugin.html), [Error Prone](https://github.com/tbroyer/gradle-errorprone-plugin), [Codacy](https://app.codacy.com/app), [Checker framework](https://checkerframework.org/)) for inclusion in the above list. We should error towards adopting any tool that can provide low-friction enforcement of some of the key conventions or best practices below.
+We will continually evaluate additional static analysis tools (such as [PMD](https://docs.gradle.org/current/userguide/pmd_plugin.html), [Error Prone](https://github.com/tbroyer/gradle-errorprone-plugin), [Codacy](https://app.codacy.com/app), [Checker framework](https://checkerframework.org/)) for inclusion in the above list. We should err towards adopting any tool that can provide low-friction enforcement of some of the key conventions or best practices below.
 
 ## Guidelines & best practices
 
 The sections below summarize our teams’ collective wisdom regarding various Java coding topics. Some advice is meant to be stronger than others — look out for the following keywords:
 
 *   **always** – always follow this practice.
-*   **should** – strong guidance; should be followed with few exceptions.
+*   **should** – strong guidance; should be followed with few exceptions.
 *   **prefer** – softer guidance, with numerous exceptions.
 *   **may / optional / at your discretion** – indicates a matter of taste or personal style.
 
-To learn more about Java best practices, a widely-recommended book is Effective Java, 3rd edition. Many of the guidelines below are paraphrasing Effective Java chapters; look for explicit references to chapters from the book, with links to the [https://github.com/david-sauvage/effective-java-summary](https://github.com/david-sauvage/effective-java-summary) notes repo.
+To learn more about Java best practices, see [Effective Java, 3rd edition](https://www.amazon.com/Effective-Java-Joshua-Bloch/dp/0134685997). Many of the guidelines below are paraphrasing Effective Java chapters; look for explicit references to chapters from the book, with links to the [https://github.com/david-sauvage/effective-java-summary](https://github.com/david-sauvage/effective-java-summary) notes repo.
 
 ### Alphabetization
 
@@ -86,7 +86,7 @@ _Exception_: Stairway is not Spring-aware, so it is a common pattern to create a
 Guidance for **unchecked exceptions**:
 
 *   More specific exceptions _should_ be thrown instead of generic RuntimeExceptions.
-    *   IllegalArgumentException, ConcurrentModificationException, UnsupportedOperationException are commonly reused exceptions from the Java library.
+    *   For example: IllegalArgumentException, ConcurrentModificationException, UnsupportedOperationException are commonly reused exceptions from the Java library.
     *   Other Terra-specific runtime exceptions _should_ be centralized in [terra-common-lib](https://github.com/DataBiosphere/terra-common-lib/tree/develop/src/main/java/bio/terra/common/exception).
 *   Service repos may also house application-specific exceptions ([WSM example](https://github.com/DataBiosphere/terra-workspace-manager/tree/dev/src/main/java/bio/terra/workspace/common/exception)).
 *   In many cases, exceptions are explicitly associated with an HTTP status code ([example](https://github.com/DataBiosphere/terra-workspace-manager/blob/4a33150f2143d163e89bfdda839e4ebf04f09b03/src/main/java/bio/terra/workspace/common/exception/ErrorReportException.java#L11)) and used to auto-generate an appropriate response ([example](https://github.com/DataBiosphere/terra-workspace-manager/blob/4a33150f2143d163e89bfdda839e4ebf04f09b03/src/main/java/bio/terra/workspace/app/controller/GlobalExceptionHandler.java#L33)).
@@ -94,14 +94,18 @@ Guidance for **unchecked exceptions**:
 ### Final
 
 *   **Classes** – unless a class has been designed and documented for inheritance, it _should_ be marked as final.
-*   **Function parameters **– _prefer_ not marking as final, due to the noisiness of the “final” keyword. Use where necessary for occasional semantic emphasis.
-*   **Instance variables** – _always_ mark as final if it is never reassigned.
-*   **Local variables** – use of final is _optional_. Short and simple methods can help avoid inappropriate variable reassignment.
-*   **Static variables** – almost _always_ mark as final.
+*   **Function parameters** – _prefer_ not marking as final, due to the noisiness of the “final” keyword. Use where necessary for occasional semantic emphasis.
+*   **Instance variables** – _always_ mark as final if it is never reassigned.
+*   **Local variables** – use of final is _optional_. Short and simple methods can help avoid inappropriate variable reassignment.
+*   **Static variables** – almost _always_ mark as final.
 
 ### Immutability
 
-Quoting from Effective Java: "immutable classes are easier to design, implement, and use than mutable classes. They are less prone to error and are more secure." See [recommendations from Effective Java](https://github.com/HugoMatilla/Effective-JAVA-Summary#15-minimize-mutability) on how to minimize mutability. [Immutables](https://immutables.github.io/) is a nice library for immutable data transfer objects, as is [Guava](https://github.com/google/guava/wiki/ImmutableCollectionsExplained) for immutable collections.
+Quoting from Effective Java: "immutable classes are easier to design, implement, and use than mutable classes. They are less prone to error and are more secure." See [recommendations from Effective Java](https://github.com/HugoMatilla/Effective-JAVA-Summary#15-minimize-mutability) on how to minimize mutability. 
+
+Developers _may_ consider using a library for auto-generating immutable data transfer objects (DTOs). [Autovalue](https://github.com/google/auto/blob/master/value/userguide/index.md) is actively used within Workspace Manager and Resource Buffer. [Immutables](https://immutables.github.io/) is another popular option. 
+
+For constructing immutable collections, _prefer_ [Guava immutable collections](https://github.com/google/guava/wiki/ImmutableCollectionsExplained).
 
 ### Java 8 features
 
@@ -110,9 +114,9 @@ Use Java 8 features where helpful. See [https://leanpub.com/whatsnewinjava8/read
 Here is a quick run-down of Java 8 topics:
 
 *   **java.time.* – **the JavaTime library _should_ be used for date-time manipulation. Duration is especially common. For non-core extensions, consider the [https://www.threeten.org/threeten-extra/](https://www.threeten.org/threeten-extra/) library.
-*   **Lambda expressions** – _prefer_ lambda expressions for short and simple bits of code. If a lambda gets too complex, extract it into a named method.
-*   **Method references** – _prefer_ method references where possible (e.g. `someStream().map(MyClass::getBar)`).
-*   **Streams** – _prefer_ using Streams for operations that can be framed as a simple, compact stream expression. On the other hand: streams can interfere with exception handling, and complex streams may be more difficult to reason about than equivalent non-stream code, so judgement is required.
+*   **Lambda expressions** – _prefer_ lambda expressions for short and simple bits of code. If a lambda gets too complex, extract it into a named method.
+*   **Method references** – _prefer_ method references where possible (e.g. `someStream().map(MyClass::getBar)`).
+*   **Streams** – _prefer_ using Streams for operations that can be framed as a simple, compact stream expression. On the other hand: streams can interfere with exception handling, and complex streams may be more difficult to reason about than equivalent non-stream code, so judgement is required.
 
 ### Javadoc
 
@@ -132,8 +136,14 @@ Some guidelines around Java methods:
 *   Keep methods short and simple.
 *   Avoid unwieldy parameter lists.
 *   Beware of accepting or returning null.
-*   _Prefer_ general types for parameters and specific types for return values.
-*   Avoid output parameters.
+*   _Prefer_ specifying more general types for method parameters (e.g. `List`) and more specific types for return values (e.g. `ImmutableList`). For return types, think about the most specific type which (1) you are comfortable committing to and (2) captures important semantics (i.e. immutability).
+*   Avoid output parameters (i.e. parameters whose main purpose is to store function output). _Prefer_ a method signature like
+  
+    ```Answer foo(args...)```
+  
+    instead of
+    
+    ```void foo(args..., Answer mutableAnswer)```
 
 See [EJ3 #49-56](https://github.com/david-sauvage/effective-java-summary#methods) for more tips.
 
