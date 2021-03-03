@@ -19,7 +19,7 @@ All Terra repos should use the following tools:
 *   [Spotless Gradle plugin](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) for auto-formatting. (See [example](https://github.com/DataBiosphere/terra-resource-buffer/blob/678a55c7a07b076dec318f4850a47a17ca3f56d9/build.gradle#L181). Devs may also find it useful to set up [google-java-format for IntelliJ](https://plugins.jetbrains.com/plugin/8527-google-java-format).)
 *   [Spotbugs Gradle plugin](https://plugins.gradle.org/plugin/com.github.spotbugs) for static analysis. (See [example](https://github.com/DataBiosphere/terra-resource-buffer/blob/678a55c7a07b076dec318f4850a47a17ca3f56d9/build.gradle#L241).)
 
-We will continually evaluate additional static analysis tools (such as [PMD](https://docs.gradle.org/current/userguide/pmd_plugin.html), [Error Prone](https://github.com/tbroyer/gradle-errorprone-plugin), [Codacy](https://app.codacy.com/app), [Checker framework](https://checkerframework.org/)) for inclusion in the above list. We should err towards adopting any tool that can provide low-friction enforcement of some of the key conventions or best practices below.
+We will continually evaluate additional static analysis tools (such as [PMD](https://docs.gradle.org/current/userguide/pmd_plugin.html), [Error Prone](https://github.com/tbroyer/gradle-errorprone-plugin), and [Codacy](https://app.codacy.com/app)) for inclusion in the above list. We should err towards adopting any tool that can provide low-friction enforcement of some of the key conventions or best practices below.
 
 ## Guidelines & best practices
 
@@ -149,7 +149,7 @@ See [EJ3 #49-56](https://github.com/david-sauvage/effective-java-summary#methods
 
 ### Null
 
-Avoid nullable references where possible! Of course, this isn’t always possible, but null checks and `@Nullable` annotations should always be viewed with healthy skepticism.
+Avoid null wherever possible! Of course, this isn’t always possible, but null checks and `@Nullable` annotations should always be viewed with healthy skepticism.
 
 #### Nullable annotations
 
