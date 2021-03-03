@@ -17,9 +17,9 @@ We believe developers should strive to spend as little time as possible worrying
 All Terra repos should use the following tools:
 
 *   [Spotless Gradle plugin](https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless) for auto-formatting. (See [example](https://github.com/DataBiosphere/terra-resource-buffer/blob/678a55c7a07b076dec318f4850a47a17ca3f56d9/build.gradle#L181). Devs may also find it useful to set up [google-java-format for IntelliJ](https://plugins.jetbrains.com/plugin/8527-google-java-format).)
-*   [Spotbugs Gradle plugin](https://plugins.gradle.org/plugin/com.github.spotbugs) for static analysis. (See [example](https://github.com/DataBiosphere/terra-resource-buffer/blob/678a55c7a07b076dec318f4850a47a17ca3f56d9/build.gradle#L241).)
+*   [Gradle Quality plugin](https://github.com/xvik/gradle-quality-plugin) for static analysis with Spotbugs, PMD, and Checkstyle.
 
-We will continually evaluate additional static analysis tools (such as [PMD](https://docs.gradle.org/current/userguide/pmd_plugin.html), [Error Prone](https://github.com/tbroyer/gradle-errorprone-plugin), and [Codacy](https://app.codacy.com/app)) for inclusion in the above list. We should err towards adopting any tool that can provide low-friction enforcement of some of the key conventions or best practices below.
+We will continually evaluate additional static analysis tools ([Error Prone](https://github.com/tbroyer/gradle-errorprone-plugin) and [Codacy](https://app.codacy.com/app)) for inclusion in the above list. We should err towards adopting any tool that can provide low-friction enforcement of the key conventions or best practices below.
 
 ## Guidelines & best practices
 
@@ -70,6 +70,7 @@ Comments, as distinguished from Javadoc (see [Javadoc](#Javadoc) section below),
 
 A few scenarios deserving of a code comment:
 * When it's not obvious *why* a given line of code exists. 
+* If a question or request for clarification might come up in code review (or if such a question *did* come up in code review).
 * If a future maintainer might reasonably undo this change or inadvertently break something non-obvious.
 * Where the structure or reasoning behind the code is well-explained by an external resource (e.g. StackOverflow link, Jira ticket, or design doc).
 
