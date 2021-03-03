@@ -1,5 +1,7 @@
 # Java Style Guide
 
+[http://broad.io/java-style](http://broad.io/java-style)
+
 ## tl;dr
 
 *   All Terra Java code should adhere to the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) where possible.
