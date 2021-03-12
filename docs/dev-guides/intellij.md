@@ -213,6 +213,43 @@ It can be launched from anywhere, but if an expression in code is highlighted, t
 evaluate that expression.
 
 ![evaluate](./images/intellij/evaluate.png)
+### Memory
+The debugger Memory window can be enabled by clicking the box in the top right
+corner:
+
+![memory](./images/intellij/memory.png)
+
+When enabled, this view allows one to search for instances of a given class by
+class name:
+
+![search_by_class](./images/intellij/search_by_class.png)
+
+One can also track a class for new instances between break points, and filter by
+tracked classes.  The image below illustrates a case where 14 instances of the
+`GenericObjectPool` class entered into scope between two break points.
+
+Note that the previous value of the Count column was 4; also note the sunglasses
+icon indicating that this class type is Tracked (right clicking the class allows
+for setting/clearing tracking of a class):
+
+![track_instances](./images/intellij/track_instances.png)
+
+Double clicking on the class entry brings up a detailed view of all instances.
+In this particular case, a leak of `GenericObjectPool` instance was being
+investigated.  Right-clicking a given instance gives a context menu which has
+the option to `Show Referring Objects...`:
+
+![instances](./images/intellij/instances.png)
+
+This in turn brings up a window showing all of the class instances that hold
+references to the object in question:
+
+![references](./images/intellij/references.png)
+
+In this case, the discovery of the presence of the `MXBeanSupport`
+reference led to the discovery that unexpected references were being held by
+JMX tracking objects (see defect
+[PF-485](https://broadworkbench.atlassian.net/browse/PF-485) for more details).
 
 ## Analysis
 ### Diagrams
