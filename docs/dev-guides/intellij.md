@@ -248,8 +248,9 @@ references to the object in question:
 
 In this case, the discovery of the presence of the `MXBeanSupport`
 reference led to the discovery that unexpected references were being held by
-JMX tracking objects (see defect
-[PF-485](https://broadworkbench.atlassian.net/browse/PF-485) for more details).
+[JMX](https://en.wikipedia.org/wiki/Java_Management_Extensions) tracking objects
+(see defect[PF-485](https://broadworkbench.atlassian.net/browse/PF-485) for more
+details).
 
 ## Analysis
 ### Diagrams
@@ -258,6 +259,32 @@ methods, properties, inner classes, template parameters, parents, and children.
 ![diagram](./images/intellij/diagram_example.png)
 ### Inspections
 Analyze | Inspect Code... runs a number of 
+### Code Coverage
+IntelliJ can provide line and class coverage for test runs.  While line/class
+coverage is not the best coverage metric, this can be a helpful quick check
+while developing tests.
+
+To run a test suite or a case with coverage, right click the green arrow at the
+scope of the suite/case and choose `Run '...' with Coverage`:
+
+![run_with_coverage](./images/intellij/run_with_coverage.png)
+
+At the completion of the test a coverage window will appear, and source will be
+annotated with green (for covered lines) and red (for uncovered lines) bars in
+the left gutter:
+
+![coverage_results](./images/intellij/coverage_results.png)
+
+Running with coverage again prompts as to whether to add the newly collected
+coverage results to the existing results, or replace:
+
+![add_or_replace](./images/intellij/add_or_replace.png)
+
+In this case, the add option was chosen, and the coverage has moved up to 100%
+line coverage for the unit under test:
+
+![full_coverage](./images/intellij/full_coverage.png)
+
 ## Plugins
 ### Gradle
 
