@@ -248,17 +248,17 @@ references to the object in question:
 
 In this case, the discovery of the presence of the `MXBeanSupport`
 reference led to the discovery that unexpected references were being held by
-[JMX](https://en.wikipedia.org/wiki/Java_Management_Extensions) tracking objects
-(see defect[PF-485](https://broadworkbench.atlassian.net/browse/PF-485) for more
-details).
+a [JMX](https://en.wikipedia.org/wiki/Java_Management_Extensions) tracking
+object.  These instances accumulated across test runs where the
+[`@DirtiesContext()`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/test/annotation/DirtiesContext.html)
+test annotation was used, leading to database connection exhaustion while
+running tests.
 
 ## Analysis
 ### Diagrams
 UML-style diagrams are available in IntelliJ Ultimate. Several options are available for exposing
 methods, properties, inner classes, template parameters, parents, and children.
 ![diagram](./images/intellij/diagram_example.png)
-### Inspections
-Analyze | Inspect Code... runs a number of 
 ### Code Coverage
 IntelliJ can provide line and class coverage for test runs.  While line/class
 coverage is not the best coverage metric, this can be a helpful quick check
@@ -284,11 +284,6 @@ In this case, the add option was chosen, and the coverage has moved up to 100%
 line coverage for the unit under test:
 
 ![full_coverage](./images/intellij/full_coverage.png)
-
-## Plugins
-### Gradle
-
-## Database
 
 ## Equipment
 ### Keyboard
