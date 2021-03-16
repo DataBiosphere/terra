@@ -213,18 +213,77 @@ It can be launched from anywhere, but if an expression in code is highlighted, t
 evaluate that expression.
 
 ![evaluate](./images/intellij/evaluate.png)
+### Memory
+The debugger Memory window can be enabled by clicking the box in the top right
+corner:
+
+![memory](./images/intellij/memory.png)
+
+When enabled, this view allows one to search for instances of a given class by
+class name:
+
+![search_by_class](./images/intellij/search_by_class.png)
+
+One can also track a class for new instances between break points, and filter by
+tracked classes.  The image below illustrates a case where 14 instances of the
+`GenericObjectPool` class entered into scope between two break points.
+
+Note that the previous value of the Count column was 4; also note the sunglasses
+icon indicating that this class type is Tracked (right clicking the class allows
+for setting/clearing tracking of a class):
+
+![track_instances](./images/intellij/track_instances.png)
+
+Double clicking on the class entry brings up a detailed view of all instances.
+In this particular case, a leak of `GenericObjectPool` instance was being
+investigated.  Right-clicking a given instance gives a context menu which has
+the option to `Show Referring Objects...`:
+
+![instances](./images/intellij/instances.png)
+
+This in turn brings up a window showing all of the class instances that hold
+references to the object in question:
+
+![references](./images/intellij/references.png)
+
+In this case, the discovery of the presence of the `MXBeanSupport`
+reference led to the discovery that unexpected references were being held by
+a [JMX](https://en.wikipedia.org/wiki/Java_Management_Extensions) tracking
+object.  These instances accumulated across test runs where the
+[`@DirtiesContext()`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/test/annotation/DirtiesContext.html)
+test annotation was used, leading to database connection exhaustion while
+running tests.
 
 ## Analysis
 ### Diagrams
 UML-style diagrams are available in IntelliJ Ultimate. Several options are available for exposing
 methods, properties, inner classes, template parameters, parents, and children.
 ![diagram](./images/intellij/diagram_example.png)
-### Inspections
-Analyze | Inspect Code... runs a number of 
-## Plugins
-### Gradle
+### Code Coverage
+IntelliJ can provide line and class coverage for test runs.  While line/class
+coverage is not the best coverage metric, this can be a helpful quick check
+while developing tests.
 
-## Database
+To run a test suite or a case with coverage, right click the green arrow at the
+scope of the suite/case and choose `Run '...' with Coverage`:
+
+![run_with_coverage](./images/intellij/run_with_coverage.png)
+
+At the completion of the test a coverage window will appear, and source will be
+annotated with green (for covered lines) and red (for uncovered lines) bars in
+the left gutter:
+
+![coverage_results](./images/intellij/coverage_results.png)
+
+Running with coverage again prompts as to whether to add the newly collected
+coverage results to the existing results, or replace:
+
+![add_or_replace](./images/intellij/add_or_replace.png)
+
+In this case, the add option was chosen, and the coverage has moved up to 100%
+line coverage for the unit under test:
+
+![full_coverage](./images/intellij/full_coverage.png)
 
 ## Equipment
 ### Keyboard
