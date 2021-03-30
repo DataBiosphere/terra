@@ -487,7 +487,8 @@ Test Runner provides the framework to target containerized applications with spe
 During a resiliency test flight, the framework spawns concurrent threads to scale cloud resources up and down while delivering load to the target *MCTerra* service components at scale according to user specifications.
 Resiliency tests can be integrated with a CI/CD pipeline such as GitHub Action Workflows, or they can be run locally for debugging purpose.
 
-Test Runner Framework supports resiliency tests on a ***namespaced*** test environment.
+Test Runner Framework supports resiliency tests on a ***namespaced*** test environment. The following discussion assumes a valid namespace already exists in a Kubernetes cluster.
+Please refer to [Creating the namespace](https://github.com/DataBiosphere/terra/blob/iv-1331/docs/dev-guides/personal-environments.md#step-3-creating-the-namespace) for more details about namespace creation in *MCTerra*.
 
 ***Requirements on running resiliency test***
 
