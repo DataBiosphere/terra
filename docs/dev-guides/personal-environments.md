@@ -502,7 +502,7 @@ The `setup-k8s-testrunner.sh` script also carries out the following functions:
 * Provision the Kubernetes Service Account, RBAC Role and RoleBinding for Test Runner.
 * Export credentials of the Test Runner Kubernetes Service Account to Vault.
 
-***Setting up namespaces for resiliency tests***
+***Setting up existing namespaces for resiliency tests***
 
 To set up a namespace for Test Runner resiliency tests, simply run the command as provided in the following example (`terra-zloery` namespace for example).
 
