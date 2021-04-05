@@ -469,6 +469,12 @@ gke-terra-integration-default-v2-95d71f95-gdfy   Ready    <none>   30h   v1.17.1
 
 </details>
 
+### Running Resiliency Tests Against Namespaces
+
+Test Runner Framework supports resiliency tests in addition to Integration, Performance, and Connected tests.
+
+For instructions on how to set up existing Kubernetes namespaces for resliency tests, please go to [*Running Resiliency Tests*](https://github.com/DataBiosphere/terra-test-runner#running-resiliency-tests) section on [*Terra Test Runner Repo*](https://github.com/DataBiosphere/terra-test-runner).
+
 ### Additional Background Reading
 #### Kubernetes
 [The Kubernetes Book]() is very accessible for beginners (like the author), and uses lots of images and
