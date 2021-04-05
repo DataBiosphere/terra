@@ -469,7 +469,7 @@ gke-terra-integration-default-v2-95d71f95-gdfy   Ready    <none>   30h   v1.17.1
 
 </details>
 
-### Running Resiliency Tests Through Test Runner Library
+### Running Resiliency Tests Against Namespaces
 
 Test Runner Framework supports resiliency tests in addition to Integration, Performance, and Connected tests.
 
