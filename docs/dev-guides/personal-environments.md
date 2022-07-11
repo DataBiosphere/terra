@@ -81,7 +81,7 @@ Atlantis to pass the variables file `jcarlton.tfvars`
 ```
 
 Third, check in a tfvars file for Terraform to use as its input variables when building this [workspace](https://www.terraform.io/docs/state/workspaces.html).
-THe contents of these files change frequently and are service-dependent.
+The contents of these files change frequently and are service-dependent.
 
 This file should be in a path like `terraform-ap-deployments/terra-env/tfvars/jcarlton.tfvars`. 
 Folder IDs refer to [GCP Project Folders](https://cloud.google.com/resource-manager/docs/creating-managing-folders).
@@ -330,8 +330,8 @@ namespace/terra-jcarlton created
 ```
 
 ##  Deploying (WorkspaceManager-specific)
-The Workspace Manager repository has a [dev-local directory](https://github.com/DataBiosphere/terra-workspace-manager/tree/dev/local-dev)
-with instructions in its README for loading the helm chart and terraform state onto a pod in the new namespace. 
+The Workspace Manager repository has a [dev-local directory](https://github.com/DataBiosphere/terra-workspace-manager/tree/main/service/local-dev)
+with instructions in its [README](https://github.com/DataBiosphere/terra-workspace-manager/blob/main/service/local-dev/README.md) for loading the helm chart and terraform state onto a pod in the new namespace. 
 
 ## Syncing in ArgoCD
 The [terra-app-generator](https://ap-argocd.dsp-devops.broadinstitute.org/applications/terra-app-generator)
